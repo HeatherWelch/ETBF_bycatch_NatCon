@@ -91,7 +91,7 @@ ui <- shinyUI(fluidPage(theme = shinytheme("cyborg"),
                                   sliderInput("date",h6(style="color:white;","Number of months since January 1998"),1,120,value = 1,sep="",width="100%")),
                             column(3, checkboxInput("aNTA_2012",h6(style="color:white;","Show reserves from the 2012 proclaimed network that prohibit longlining"),value = F,width = "100%")),
                             column(2, actionButton("azoomCS",h6("Zoom to Coral Sea Network"))),
-                            column(2, actionButton("zoomTE",h6("Zoom to Temperate East Network")))
+                            column(2, actionButton("azoomTE",h6("Zoom to Temperate East Network")))
                             ),
                           fluidRow(#style="background-color:darkgrey;",
                             column(4,style="background-color:black;",h6(style="color:white;background-color:black;text-align:center;",textOutput("dateOutput"))),
@@ -152,7 +152,9 @@ server <- shinyServer(function(input, output) {
   se_ext$zoom=5
   
   v <- reactiveValues(data = NULL)
+  av <- reactiveValues(data = NULL)
   
+  #####tabset 1
   observeEvent(input$zoomCS, {
     #need this null to force a data change and a re-render
     v$data<-NULL
@@ -177,28 +179,29 @@ server <- shinyServer(function(input, output) {
     v$data <- ras_ext
   }) 
   
+  #####tabset 1
   observeEvent(input$azoomCS, {
     #need this null to force a data change and a re-render
-    v$data<-NULL
-    v$data <- cs_ext
+    av$data<-NULL
+    av$data <- cs_ext
   })
   
   observeEvent(input$azoomTE, {
     #need this null to force a data change and a re-render
-    v$data<-NULL
-    v$data <- te_ext
+    av$data<-NULL
+    av$data <- te_ext
   }) 
   
   observeEvent(input$azoomSE, {
     #need this null to force a data change and a re-render
-    v$data<-NULL
-    v$data <- se_ext
+    av$data<-NULL
+    av$data <- se_ext
   }) 
   
   observeEvent(input$azoomFL, {
     #need this null to force a data change and a re-render
-    v$data<-NULL
-    v$data <- ras_ext
+    av$data<-NULL
+    av$data <- ras_ext
   }) 
   #####
   
@@ -209,8 +212,12 @@ server <- shinyServer(function(input, output) {
   ashow2015=reactive({input$aNTA_2015})
   
   ########## --------------------------------------------------------------- > tabset 1 ####
-  
   output$bs <- renderLeaflet({
+    withProgress(message = 'Loading images: ', value = 0, {
+      incrs <- 7
+      step <-1
+      rstack<-c()
+      incProgress(1/incrs, detail = paste("reading..."))
     target_ext <- v$data
     if(is.null(target_ext)){
       target_ext<-ras_ext
@@ -240,9 +247,15 @@ server <- shinyServer(function(input, output) {
       lmap <-addPolylines(lmap,data=NTA_2015,color="blue",weight = 2)
     }
     lmap
+    })
   })
   
   output$bws <- renderLeaflet({
+    withProgress(message = 'Loading images: ', value = 0, {
+      incrs <- 7
+      step <-1
+      rstack<-c()
+      incProgress(1/incrs, detail = paste("reading..."))
     target_ext <- v$data
     if(is.null(target_ext)){
       target_ext<-ras_ext
@@ -273,8 +286,14 @@ server <- shinyServer(function(input, output) {
     }
     lmap
   })
+  })
   
   output$ts <- renderLeaflet({
+    withProgress(message = 'Loading images: ', value = 0, {
+      incrs <- 7
+      step <-1
+      rstack<-c()
+      incProgress(1/incrs, detail = paste("reading..."))
     target_ext <- v$data
     if(is.null(target_ext)){
       target_ext<-ras_ext
@@ -305,8 +324,14 @@ server <- shinyServer(function(input, output) {
     }
     lmap
   })
+  })
   
   output$dws <- renderLeaflet({
+    withProgress(message = 'Loading images: ', value = 0, {
+      incrs <- 7
+      step <-1
+      rstack<-c()
+      incProgress(1/incrs, detail = paste("reading..."))
     target_ext <- v$data
     if(is.null(target_ext)){
       target_ext<-ras_ext
@@ -337,8 +362,14 @@ server <- shinyServer(function(input, output) {
     }
     lmap
   })
+  })
   
   output$ss <- renderLeaflet({
+    withProgress(message = 'Loading images: ', value = 0, {
+      incrs <- 7
+      step <-1
+      rstack<-c()
+      incProgress(1/incrs, detail = paste("reading..."))
     target_ext <- v$data
     if(is.null(target_ext)){
       target_ext<-ras_ext
@@ -369,8 +400,14 @@ server <- shinyServer(function(input, output) {
     }
     lmap
   })
+  })
   
   output$sfm <- renderLeaflet({
+    withProgress(message = 'Loading images: ', value = 0, {
+      incrs <- 7
+      step <-1
+      rstack<-c()
+      incProgress(1/incrs, detail = paste("reading..."))
     target_ext <- v$data
     if(is.null(target_ext)){
       target_ext<-ras_ext
@@ -401,8 +438,14 @@ server <- shinyServer(function(input, output) {
     }
     lmap
   })
+  })
   
   output$ows <- renderLeaflet({
+    withProgress(message = 'Loading images: ', value = 0, {
+      incrs <- 7
+      step <-1
+      rstack<-c()
+      incProgress(1/incrs, detail = paste("reading..."))
     target_ext <- v$data
     if(is.null(target_ext)){
       target_ext<-ras_ext
@@ -433,8 +476,14 @@ server <- shinyServer(function(input, output) {
     }
     lmap
   })
+    })
   
   output$all <- renderLeaflet({
+    withProgress(message = 'Loading images: ', value = 0, {
+      incrs <- 7
+      step <-1
+      rstack<-c()
+      incProgress(1/incrs, detail = paste("reading..."))
     target_ext <- v$data
     if(is.null(target_ext)){
       target_ext<-ras_ext
@@ -465,10 +514,10 @@ server <- shinyServer(function(input, output) {
     }
     lmap
   })
-  
-  
+  })
+
   ########## --------------------------------------------------------------- > tabset 2 ####
-  ##### collect reactive elements ####
+  ##### collect reactive elements 
   textDate=reactive({yearmon[input$date]})
   output$dateOutput=renderText({paste0("Display date is ",textDate())})
   numDate=reactive({as.character(yearmon_numeric[input$date])})
@@ -480,7 +529,12 @@ server <- shinyServer(function(input, output) {
                            na.color = "transparent")
   
   output$bs1 <- renderLeaflet({
-    target_ext <- v$data
+    withProgress(message = 'Loading images: ', value = 0, {
+      incrs <- 7
+      step <-1
+      rstack<-c()
+      incProgress(1/incrs, detail = paste("reading..."))
+    target_ext <- av$data
     if(is.null(target_ext)){
       target_ext<-ras_ext
     }
@@ -502,9 +556,15 @@ server <- shinyServer(function(input, output) {
     }
     lmap
   })
+  })
   
   output$bws1 <- renderLeaflet({
-    target_ext <- v$data
+    withProgress(message = 'Loading images: ', value = 0, {
+      incrs <- 7
+      step <-1
+      rstack<-c()
+      incProgress(1/incrs, detail = paste("reading..."))
+    target_ext <- av$data
     if(is.null(target_ext)){
       target_ext<-ras_ext
     }
@@ -526,9 +586,15 @@ server <- shinyServer(function(input, output) {
     }
     lmap
   })
+  })
   
   output$ts1 <- renderLeaflet({
-    target_ext <- v$data
+    withProgress(message = 'Loading images: ', value = 0, {
+      incrs <- 7
+      step <-1
+      rstack<-c()
+      incProgress(1/incrs, detail = paste("reading..."))
+    target_ext <- av$data
     if(is.null(target_ext)){
       target_ext<-ras_ext
     }
@@ -550,9 +616,15 @@ server <- shinyServer(function(input, output) {
     }
     lmap
   })
+  })
   
   output$dws1 <- renderLeaflet({
-    target_ext <- v$data
+    withProgress(message = 'Loading images: ', value = 0, {
+      incrs <- 7
+      step <-1
+      rstack<-c()
+      incProgress(1/incrs, detail = paste("reading..."))
+    target_ext <- av$data
     if(is.null(target_ext)){
       target_ext<-ras_ext
     }
@@ -574,9 +646,15 @@ server <- shinyServer(function(input, output) {
     }
     lmap
   })
+  })
   
   output$ss1<- renderLeaflet({
-    target_ext <- v$data
+    withProgress(message = 'Loading images: ', value = 0, {
+      incrs <- 7
+      step <-1
+      rstack<-c()
+      incProgress(1/incrs, detail = paste("reading..."))
+    target_ext <- av$data
     if(is.null(target_ext)){
       target_ext<-ras_ext
     }
@@ -598,9 +676,15 @@ server <- shinyServer(function(input, output) {
     }
     lmap
   })
+  })
   
   output$sfm1 <- renderLeaflet({
-    target_ext <- v$data
+    withProgress(message = 'Loading images: ', value = 0, {
+      incrs <- 7
+      step <-1
+      rstack<-c()
+      incProgress(1/incrs, detail = paste("reading..."))
+    target_ext <- av$data
     if(is.null(target_ext)){
       target_ext<-ras_ext
     }
@@ -622,9 +706,15 @@ server <- shinyServer(function(input, output) {
     }
     lmap
   })
+  })
   
   output$ows1 <- renderLeaflet({
-    target_ext <- v$data
+    withProgress(message = 'Loading images: ', value = 0, {
+      incrs <- 7
+      step <-1
+      rstack<-c()
+      incProgress(1/incrs, detail = paste("reading..."))
+    target_ext <- av$data
     if(is.null(target_ext)){
       target_ext<-ras_ext
     }
@@ -646,9 +736,15 @@ server <- shinyServer(function(input, output) {
     }
     lmap
   })
+  })
   
   output$all1 <- renderLeaflet({
-    target_ext <- v$data
+    withProgress(message = 'Loading images: ', value = 0, {
+      incrs <- 7
+      step <-1
+      rstack<-c()
+      incProgress(1/incrs, detail = paste("reading..."))
+    target_ext <- av$data
     if(is.null(target_ext)){
       target_ext<-ras_ext
     }
@@ -677,6 +773,7 @@ server <- shinyServer(function(input, output) {
       lmap <-addPolylines(lmap,data=NTA_2015,color="blue",weight = 2)
     }
     lmap
+  })
   })
   
   ######
