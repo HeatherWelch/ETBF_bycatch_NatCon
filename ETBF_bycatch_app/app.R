@@ -390,8 +390,8 @@ server <- shinyServer(function(input, output) {
     lmap <- addProviderTiles(lmap, "Esri.NatGeoWorldMap",options = providerTileOptions(noWrap = F))
     lmap <-addRasterImage(lmap, projectRasterForLeaflet(full),colors=palette2)
     #lmap <- addLegend(lmap, "bottomright", values = vals,pal=palette2,title = "Total threat")
-    lmap <- addLegend(lmap,"topright",colors = "grey",labels = "Removed areas",opacity = 1)
-    #lmap <-addPolygons(lmap,data=removed,color="grey",opacity = 1,fillOpacity = 1)
+    #lmap <- addLegend(lmap,"topright",colors = "grey",labels = "Removed areas",opacity = 1)
+    lmap <-addPolygons(lmap,data=removed,color="grey",opacity = 1,fillOpacity = 1)
     if(show2012()){
       lmap <-addPolylines(lmap,data=NTA_2012,color="black",weight = 2)
     }
