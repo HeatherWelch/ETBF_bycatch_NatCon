@@ -123,7 +123,16 @@ ui <- shinyUI(fluidPage(theme = shinytheme("cyborg"),
                               column(3,leafletOutput("sfm1")),
                               column(3,leafletOutput("all1")))
 
-                          )
+                          ),
+
+######## ------------> Tab 3 #######
+tabPanel("Monthly habitat suitability gifs",
+         hr(),
+fluidRow(
+  column(3,selectInput("sp","Select species",choices = species)),
+  column(12,imageOutput("gif"))
+)
+ )
                           )))))
              
 
@@ -778,9 +787,31 @@ server <- shinyServer(function(input, output) {
   
   ######
   
+  ########## --------------------------------------------------------------- > tabset 3
+  output$gif=renderImage({
+    spp=input$sp
+    if(spp=="Blue shark"){
+      a="bs"
+    }else if(spp=="Bronze whaler shark"){
+      a="bws"
+    }else if(spp=="Dusky whaler shark"){
+      a="Dws"
+    }else if(spp=="Oceanic whitetip shark"){
+      a="ows"
+    }else if(spp=="Shortfin mako shark"){
+      a="sfm"
+    }else if(spp=="Silky shark"){
+      a="ss"
+    }else if(spp=="Tiger shark"){
+      a="ts"}
+    
+    list(src=paste0("data/gifs/",a,".gif"),
+         contentType = 'image/gif',
+         width = 850,
+         height = 1000
+         # alt = "This is alternate text"
+    )},deleteFile = F)
 
-  
-  
 })
 
 shinyApp(ui = ui, server = server)
