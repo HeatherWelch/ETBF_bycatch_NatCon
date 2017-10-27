@@ -59,10 +59,10 @@ ui <- shinyUI(fluidPage(theme = shinytheme("cyborg"),
                           column(2, actionButton("zoomFL",h6("Zoom to full extent")))
                                    ),
                                    fluidRow(
-                          column(3,titlePanel(tags$div(h4(style="text-align:center;","Blue shark")))),
-                          column(3,titlePanel(tags$div(h4(style="text-align:center;","Bronze whaler shark")))),
-                          column(3,titlePanel(tags$div(h4(style="text-align:center;","Tiger shark")))),
-                          column(3,titlePanel(tags$div(h4(style="text-align:center;","Dusky whaler shark"))))
+                          column(3,titlePanel(tags$div(h4(style="text-align:center;background-color:grey;","Blue shark")))),
+                          column(3,titlePanel(tags$div(h4(style="text-align:center;background-color:grey;","Bronze whaler shark")))),
+                          column(3,titlePanel(tags$div(h4(style="text-align:center;background-color:grey;","Tiger shark")))),
+                          column(3,titlePanel(tags$div(h4(style="text-align:center;background-color:grey;","Dusky whaler shark"))))
                           ),
                                   fluidRow(
                           column(3,leafletOutput("bs")),
@@ -71,10 +71,10 @@ ui <- shinyUI(fluidPage(theme = shinytheme("cyborg"),
                           column(3,leafletOutput("dws"))
                                   ),
                           fluidRow(
-                            column(3,titlePanel(tags$div(h4(style="text-align:center;","Oceanic whitetip shark")))),
-                            column(3,titlePanel(tags$div(h4(style="text-align:center;","Silky shark")))),
-                            column(3,titlePanel(tags$div(h4(style="text-align:center;","Shortfin mako shark")))),
-                            column(3,titlePanel(tags$div(h4(style="text-align:center;","All sharks"))))
+                            column(3,titlePanel(tags$div(h4(style="text-align:center;background-color:grey;","Oceanic whitetip shark")))),
+                            column(3,titlePanel(tags$div(h4(style="text-align:center;background-color:grey;","Silky shark")))),
+                            column(3,titlePanel(tags$div(h4(style="text-align:center;background-color:grey;","Shortfin mako shark")))),
+                            column(3,titlePanel(tags$div(h4(style="text-align:center;background-color:grey;","All sharks"))))
                           ),
                           fluidRow(
                             column(3,leafletOutput("ows")),
@@ -100,10 +100,10 @@ ui <- shinyUI(fluidPage(theme = shinytheme("cyborg"),
                             column(2, actionButton("azoomFL",h6("Zoom to full extent")))
                                     ),
                             fluidRow(
-                              column(3,titlePanel(tags$div(h4(style="text-align:center;","Blue shark")))),
-                              column(3,titlePanel(tags$div(h4(style="text-align:center;","Bronze whaler shark")))),
-                              column(3,titlePanel(tags$div(h4(style="text-align:center;","Tiger shark")))),
-                              column(3,titlePanel(tags$div(h4(style="text-align:center;","Dusky whaler shark"))))
+                              column(3,titlePanel(tags$div(h4(style="text-align:center;background-color:grey;","Blue shark")))),
+                              column(3,titlePanel(tags$div(h4(style="text-align:center;background-color:grey;","Bronze whaler shark")))),
+                              column(3,titlePanel(tags$div(h4(style="text-align:center;background-color:grey;","Tiger shark")))),
+                              column(3,titlePanel(tags$div(h4(style="text-align:center;background-color:grey;","Dusky whaler shark"))))
                             ),
                             fluidRow(
                               column(3,leafletOutput("bs1")),
@@ -112,10 +112,10 @@ ui <- shinyUI(fluidPage(theme = shinytheme("cyborg"),
                               column(3,leafletOutput("dws1"))
                             ),
                             fluidRow(
-                              column(3,titlePanel(tags$div(h4(style="text-align:center;","Oceanic whitetip shark")))),
-                              column(3,titlePanel(tags$div(h4(style="text-align:center;","Silky shark")))),
-                              column(3,titlePanel(tags$div(h4(style="text-align:center;","Shortfin mako shark")))),
-                              column(3,titlePanel(tags$div(h4(style="text-align:center;","All sharks"))))
+                              column(3,titlePanel(tags$div(h4(style="text-align:center;background-color:grey;","Oceanic whitetip shark")))),
+                              column(3,titlePanel(tags$div(h4(style="text-align:center;background-color:grey;","Silky shark")))),
+                              column(3,titlePanel(tags$div(h4(style="text-align:center;background-color:grey;","Shortfin mako shark")))),
+                              column(3,titlePanel(tags$div(h4(style="text-align:center;background-color:grey;","All sharks"))))
                             ),
                             fluidRow(
                               column(3,leafletOutput("ows1")),
@@ -235,25 +235,32 @@ server <- shinyServer(function(input, output) {
     full=raster(paste0(threat_dir,"total_bs.tif"))
     full[full>20000]=20000
     
-    pal <- brewer.pal(11,"RdYlBu")
-    vals <- NULL
+    # pal <- brewer.pal(11,"RdYlBu")
+    # vals <- NULL
+    # vals=c(0,full@data@max)
+    # palette2 <- colorNumeric(pal, vals,
+    #                          na.color = "transparent")
+    
+    pal <- colorRampPalette(rev(c("#A50026", "#FFFFBF", "#313695")))
+    ncolors <- 100
+    col=pal(ncolors)
     vals=c(0,full@data@max)
-    palette2 <- colorNumeric(pal, vals,
-                             na.color = "transparent")
+    palette2 <- colorNumeric(col, vals,na.color = "transparent")
+    legend_pal=c("#A50026","#B52E41","#C76160","#D9957F","#EBC89E", "#FFFFBF","#D7D8B6","#ADAFAE","#8487A5","#5A5E9D","#313695")
     
     crs(full)="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
     lmap=leaflet()
     lmap <- setView(lmap, target_ext$lon, target_ext$lat, zoom=target_ext$zoom)
-    lmap <- addProviderTiles(lmap, "Esri.NatGeoWorldMap",options = providerTileOptions(noWrap = F))
+    lmap <- addProviderTiles(lmap, "Stamen.Toner",options = providerTileOptions(noWrap = F))
     lmap <-addRasterImage(lmap, projectRasterForLeaflet(full),colors=palette2)
-    lmap <- addLegend(lmap, "topright", values = vals,color=pal,labels=c("Low","","","","","","","","","","High"),title = "Total threat")
+    lmap <- addLegend(lmap, "topright", values = vals,color=legend_pal,labels=c("High","","","","","","","","","","Low"),title = "Total threat")
     lmap <- addLegend(lmap,"topright",colors = "grey",labels = "Removed",opacity = 1)
     lmap <-addPolygons(lmap,data=removed,color="grey",opacity = 1,fillOpacity = 1)
     if(show2012()){
-      lmap <-addPolylines(lmap,data=NTA_2012,color="black",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2012,color="aquamarine",weight = 2)
     }
     if(show2015()){
-      lmap <-addPolylines(lmap,data=NTA_2015,color="blue",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2015,color="forestgreen",weight = 2)
     }
     lmap
     })
@@ -273,25 +280,32 @@ server <- shinyServer(function(input, output) {
     full=raster(paste0(threat_dir,"total_bws.tif"))
     full[full>20000]=20000
     
-    pal <- brewer.pal(11,"RdYlBu")
-    vals <- NULL
+    # pal <- brewer.pal(11,"RdYlBu")
+    # vals <- NULL
+    # vals=c(0,full@data@max)
+    # palette2 <- colorNumeric(pal, vals,
+    #                          na.color = "transparent")
+    
+    pal <- colorRampPalette(rev(c("#A50026", "#FFFFBF", "#313695")))
+    ncolors <- 100
+    col=pal(ncolors)
     vals=c(0,full@data@max)
-    palette2 <- colorNumeric(pal, vals,
-                             na.color = "transparent")
+    palette2 <- colorNumeric(col, vals,na.color = "transparent")
+    legend_pal=c("#A50026","#B52E41","#C76160","#D9957F","#EBC89E", "#FFFFBF","#D7D8B6","#ADAFAE","#8487A5","#5A5E9D","#313695")
     
     crs(full)="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
     lmap=leaflet()
     lmap <- setView(lmap, target_ext$lon, target_ext$lat, zoom=target_ext$zoom)
-    lmap <- addProviderTiles(lmap, "Esri.NatGeoWorldMap",options = providerTileOptions(noWrap = F))
+    lmap <- addProviderTiles(lmap, "Stamen.Toner",options = providerTileOptions(noWrap = F))
     lmap <-addRasterImage(lmap, projectRasterForLeaflet(full),colors=palette2)
     #lmap <- addLegend(lmap, "bottomright", values = vals,pal=palette2,title = "Total threat")
     #lmap <- addLegend(lmap,"topright",colors = "grey",labels = "Removed areas",opacity = 1)
     lmap <-addPolygons(lmap,data=removed,color="grey",opacity = 1,fillOpacity = 1)
     if(show2012()){
-      lmap <-addPolylines(lmap,data=NTA_2012,color="black",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2012,color="aquamarine",weight = 2)
     }
     if(show2015()){
-      lmap <-addPolylines(lmap,data=NTA_2015,color="blue",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2015,color="forestgreen",weight = 2)
     }
     lmap
   })
@@ -311,25 +325,32 @@ server <- shinyServer(function(input, output) {
     full=raster(paste0(threat_dir,"total_ts.tif"))
     full[full>20000]=20000
     
-    pal <- brewer.pal(11,"RdYlBu")
-    vals <- NULL
+    # pal <- brewer.pal(11,"RdYlBu")
+    # vals <- NULL
+    # vals=c(0,full@data@max)
+    # palette2 <- colorNumeric(pal, vals,
+    #                          na.color = "transparent")
+    
+    pal <- colorRampPalette(rev(c("#A50026", "#FFFFBF", "#313695")))
+    ncolors <- 100
+    col=pal(ncolors)
     vals=c(0,full@data@max)
-    palette2 <- colorNumeric(pal, vals,
-                             na.color = "transparent")
+    palette2 <- colorNumeric(col, vals,na.color = "transparent")
+    legend_pal=c("#A50026","#B52E41","#C76160","#D9957F","#EBC89E", "#FFFFBF","#D7D8B6","#ADAFAE","#8487A5","#5A5E9D","#313695")
     
     crs(full)="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
     lmap=leaflet()
     lmap <- setView(lmap, target_ext$lon, target_ext$lat, zoom=target_ext$zoom)
-    lmap <- addProviderTiles(lmap, "Esri.NatGeoWorldMap",options = providerTileOptions(noWrap = F))
+    lmap <- addProviderTiles(lmap, "Stamen.Toner",options = providerTileOptions(noWrap = F))
     lmap <-addRasterImage(lmap, projectRasterForLeaflet(full),colors=palette2)
     #lmap <- addLegend(lmap, "bottomright", values = vals,pal=palette2,title = "Total threat")
     #lmap <- addLegend(lmap,"topright",colors = "grey",labels = "Removed areas",opacity = 1)
     lmap <-addPolygons(lmap,data=removed,color="grey",opacity = 1,fillOpacity = 1)
     if(show2012()){
-      lmap <-addPolylines(lmap,data=NTA_2012,color="black",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2012,color="aquamarine",weight = 2)
     }
     if(show2015()){
-      lmap <-addPolylines(lmap,data=NTA_2015,color="blue",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2015,color="forestgreen",weight = 2)
     }
     lmap
   })
@@ -349,25 +370,32 @@ server <- shinyServer(function(input, output) {
     full=raster(paste0(threat_dir,"total_dws.tif"))
     full[full>20000]=20000
     
-    pal <- brewer.pal(11,"RdYlBu")
-    vals <- NULL
+    # pal <- brewer.pal(11,"RdYlBu")
+    # vals <- NULL
+    # vals=c(0,full@data@max)
+    # palette2 <- colorNumeric(pal, vals,
+    #                          na.color = "transparent")
+    
+    pal <- colorRampPalette(rev(c("#A50026", "#FFFFBF", "#313695")))
+    ncolors <- 100
+    col=pal(ncolors)
     vals=c(0,full@data@max)
-    palette2 <- colorNumeric(pal, vals,
-                             na.color = "transparent")
+    palette2 <- colorNumeric(col, vals,na.color = "transparent")
+    legend_pal=c("#A50026","#B52E41","#C76160","#D9957F","#EBC89E", "#FFFFBF","#D7D8B6","#ADAFAE","#8487A5","#5A5E9D","#313695")
     
     crs(full)="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
     lmap=leaflet()
     lmap <- setView(lmap, target_ext$lon, target_ext$lat, zoom=target_ext$zoom)
-    lmap <- addProviderTiles(lmap, "Esri.NatGeoWorldMap",options = providerTileOptions(noWrap = F))
+    lmap <- addProviderTiles(lmap, "Stamen.Toner",options = providerTileOptions(noWrap = F))
     lmap <-addRasterImage(lmap, projectRasterForLeaflet(full),colors=palette2)
     #lmap <- addLegend(lmap, "bottomright", values = vals,pal=palette2,title = "Total threat")
     #lmap <- addLegend(lmap,"topright",colors = "grey",labels = "Removed areas",opacity = 1)
     lmap <-addPolygons(lmap,data=removed,color="grey",opacity = 1,fillOpacity = 1)
     if(show2012()){
-      lmap <-addPolylines(lmap,data=NTA_2012,color="black",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2012,color="aquamarine",weight = 2)
     }
     if(show2015()){
-      lmap <-addPolylines(lmap,data=NTA_2015,color="blue",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2015,color="forestgreen",weight = 2)
     }
     lmap
   })
@@ -387,25 +415,32 @@ server <- shinyServer(function(input, output) {
     full=raster(paste0(threat_dir,"total_ss.tif"))
     full[full>20000]=20000
     
-    pal <- brewer.pal(11,"RdYlBu")
-    vals <- NULL
+    # pal <- brewer.pal(11,"RdYlBu")
+    # vals <- NULL
+    # vals=c(0,full@data@max)
+    # palette2 <- colorNumeric(pal, vals,
+    #                          na.color = "transparent")
+    
+    pal <- colorRampPalette(rev(c("#A50026", "#FFFFBF", "#313695")))
+    ncolors <- 100
+    col=pal(ncolors)
     vals=c(0,full@data@max)
-    palette2 <- colorNumeric(pal, vals,
-                             na.color = "transparent")
+    palette2 <- colorNumeric(col, vals,na.color = "transparent")
+    legend_pal=c("#A50026","#B52E41","#C76160","#D9957F","#EBC89E", "#FFFFBF","#D7D8B6","#ADAFAE","#8487A5","#5A5E9D","#313695")
     
     crs(full)="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
     lmap=leaflet()
     lmap <- setView(lmap, target_ext$lon, target_ext$lat, zoom=target_ext$zoom)
-    lmap <- addProviderTiles(lmap, "Esri.NatGeoWorldMap",options = providerTileOptions(noWrap = F))
+    lmap <- addProviderTiles(lmap, "Stamen.Toner",options = providerTileOptions(noWrap = F))
     lmap <-addRasterImage(lmap, projectRasterForLeaflet(full),colors=palette2)
     #lmap <- addLegend(lmap, "bottomright", values = vals,pal=palette2,title = "Total threat")
     #lmap <- addLegend(lmap,"topright",colors = "grey",labels = "Removed areas",opacity = 1)
     lmap <-addPolygons(lmap,data=removed,color="grey",opacity = 1,fillOpacity = 1)
     if(show2012()){
-      lmap <-addPolylines(lmap,data=NTA_2012,color="black",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2012,color="aquamarine",weight = 2)
     }
     if(show2015()){
-      lmap <-addPolylines(lmap,data=NTA_2015,color="blue",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2015,color="forestgreen",weight = 2)
     }
     lmap
   })
@@ -425,25 +460,32 @@ server <- shinyServer(function(input, output) {
     full=raster(paste0(threat_dir,"total_sfm.tif"))
     full[full>20000]=20000
     
-    pal <- brewer.pal(11,"RdYlBu")
-    vals <- NULL
+    # pal <- brewer.pal(11,"RdYlBu")
+    # vals <- NULL
+    # vals=c(0,full@data@max)
+    # palette2 <- colorNumeric(pal, vals,
+    #                          na.color = "transparent")
+    
+    pal <- colorRampPalette(rev(c("#A50026", "#FFFFBF", "#313695")))
+    ncolors <- 100
+    col=pal(ncolors)
     vals=c(0,full@data@max)
-    palette2 <- colorNumeric(pal, vals,
-                             na.color = "transparent")
+    palette2 <- colorNumeric(col, vals,na.color = "transparent")
+    legend_pal=c("#A50026","#B52E41","#C76160","#D9957F","#EBC89E", "#FFFFBF","#D7D8B6","#ADAFAE","#8487A5","#5A5E9D","#313695")
     
     crs(full)="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
     lmap=leaflet()
     lmap <- setView(lmap, target_ext$lon, target_ext$lat, zoom=target_ext$zoom)
-    lmap <- addProviderTiles(lmap, "Esri.NatGeoWorldMap",options = providerTileOptions(noWrap = F))
+    lmap <- addProviderTiles(lmap, "Stamen.Toner",options = providerTileOptions(noWrap = F))
     lmap <-addRasterImage(lmap, projectRasterForLeaflet(full),colors=palette2)
     #lmap <- addLegend(lmap, "bottomright", values = vals,pal=palette2,title = "Total threat")
     #lmap <- addLegend(lmap,"topright",colors = "grey",labels = "Removed areas",opacity = 1)
     lmap <-addPolygons(lmap,data=removed,color="grey",opacity = 1,fillOpacity = 1)
     if(show2012()){
-      lmap <-addPolylines(lmap,data=NTA_2012,color="black",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2012,color="aquamarine",weight = 2)
     }
     if(show2015()){
-      lmap <-addPolylines(lmap,data=NTA_2015,color="blue",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2015,color="forestgreen",weight = 2)
     }
     lmap
   })
@@ -463,25 +505,32 @@ server <- shinyServer(function(input, output) {
     full=raster(paste0(threat_dir,"total_ows.tif"))
     full[full>20000]=20000
     
-    pal <- brewer.pal(11,"RdYlBu")
-    vals <- NULL
+    # pal <- brewer.pal(11,"RdYlBu")
+    # vals <- NULL
+    # vals=c(0,full@data@max)
+    # palette2 <- colorNumeric(pal, vals,
+    #                          na.color = "transparent")
+    
+    pal <- colorRampPalette(rev(c("#A50026", "#FFFFBF", "#313695")))
+    ncolors <- 100
+    col=pal(ncolors)
     vals=c(0,full@data@max)
-    palette2 <- colorNumeric(pal, vals,
-                             na.color = "transparent")
+    palette2 <- colorNumeric(col, vals,na.color = "transparent")
+    legend_pal=c("#A50026","#B52E41","#C76160","#D9957F","#EBC89E", "#FFFFBF","#D7D8B6","#ADAFAE","#8487A5","#5A5E9D","#313695")
     
     crs(full)="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
     lmap=leaflet()
     lmap <- setView(lmap, target_ext$lon, target_ext$lat, zoom=target_ext$zoom)
-    lmap <- addProviderTiles(lmap, "Esri.NatGeoWorldMap",options = providerTileOptions(noWrap = F))
+    lmap <- addProviderTiles(lmap, "Stamen.Toner",options = providerTileOptions(noWrap = F))
     lmap <-addRasterImage(lmap, projectRasterForLeaflet(full),colors=palette2)
     #lmap <- addLegend(lmap, "bottomright", values = vals,pal=palette2,title = "Total threat")
     #lmap <- addLegend(lmap,"topright",colors = "grey",labels = "Removed areas",opacity = 1)
     lmap <-addPolygons(lmap,data=removed,color="grey",opacity = 1,fillOpacity = 1)
     if(show2012()){
-      lmap <-addPolylines(lmap,data=NTA_2012,color="black",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2012,color="aquamarine",weight = 2)
     }
     if(show2015()){
-      lmap <-addPolylines(lmap,data=NTA_2015,color="blue",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2015,color="forestgreen",weight = 2)
     }
     lmap
   })
@@ -501,25 +550,32 @@ server <- shinyServer(function(input, output) {
     full=raster(paste0(threat_dir,"total_all.tif"))
     full[full>140000]=140000
     
-    pal <- brewer.pal(11,"RdYlBu")
-    vals <- NULL
+    # pal <- brewer.pal(11,"RdYlBu")
+    # vals <- NULL
+    # vals=c(0,full@data@max)
+    # palette2 <- colorNumeric(pal, vals,
+    #                          na.color = "transparent")
+    
+    pal <- colorRampPalette(rev(c("#A50026", "#FFFFBF", "#313695")))
+    ncolors <- 100
+    col=pal(ncolors)
     vals=c(0,full@data@max)
-    palette2 <- colorNumeric(pal, vals,
-                             na.color = "transparent")
+    palette2 <- colorNumeric(col, vals,na.color = "transparent")
+    legend_pal=c("#A50026","#B52E41","#C76160","#D9957F","#EBC89E", "#FFFFBF","#D7D8B6","#ADAFAE","#8487A5","#5A5E9D","#313695")
     
     crs(full)="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
     lmap=leaflet()
     lmap <- setView(lmap, target_ext$lon, target_ext$lat, zoom=target_ext$zoom)
-    lmap <- addProviderTiles(lmap, "Esri.NatGeoWorldMap",options = providerTileOptions(noWrap = F))
+    lmap <- addProviderTiles(lmap, "Stamen.Toner",options = providerTileOptions(noWrap = F))
     lmap <-addRasterImage(lmap, projectRasterForLeaflet(full),colors=palette2)
     #lmap <- addLegend(lmap, "bottomright", values = vals,pal=palette2,title = "Total threat")
     #lmap <- addLegend(lmap,"topright",colors = "grey",labels = "Removed areas",opacity = 1)
     lmap <-addPolygons(lmap,data=removed,color="grey",opacity = 1,fillOpacity = 1)
     if(show2012()){
-      lmap <-addPolylines(lmap,data=NTA_2012,color="black",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2012,color="aquamarine",weight = 2)
     }
     if(show2015()){
-      lmap <-addPolylines(lmap,data=NTA_2015,color="blue",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2015,color="forestgreen",weight = 2)
     }
     lmap
   })
@@ -531,11 +587,18 @@ server <- shinyServer(function(input, output) {
   output$dateOutput=renderText({paste0("Display date is ",textDate())})
   numDate=reactive({as.character(yearmon_numeric[input$date])})
 
-  pal <- brewer.pal(11,"RdYlBu")
-  vals <- NULL
+  pal <- colorRampPalette(rev(c("#A50026", "#FFFFBF", "#313695")))
+  ncolors <- 100
+  col=pal(ncolors)
   vals=c(0,1)
-  palette2 <- colorNumeric(pal, vals,
-                           na.color = "transparent")
+  palette2 <- colorNumeric(col, vals,na.color = "transparent")
+  legend_pal=c("#A50026","#B52E41","#C76160","#D9957F","#EBC89E", "#FFFFBF","#D7D8B6","#ADAFAE","#8487A5","#5A5E9D","#313695")
+  
+  # pal <- brewer.pal(11,"RdYlBu")
+  # vals <- NULL
+  # vals=c(0,1)
+  # palette2 <- colorNumeric(pal, vals,
+  #                          na.color = "transparent")
   
   output$bs1 <- renderLeaflet({
     withProgress(message = 'Loading images: ', value = 0, {
@@ -552,16 +615,16 @@ server <- shinyServer(function(input, output) {
     crs(full)="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
     lmap=leaflet()
     lmap <- setView(lmap, target_ext$lon, target_ext$lat, zoom=target_ext$zoom)
-    lmap <- addProviderTiles(lmap, "Esri.NatGeoWorldMap",options = providerTileOptions(noWrap = F))
+    lmap <- addProviderTiles(lmap, "Stamen.Toner",options = providerTileOptions(noWrap = F))
     lmap <-addRasterImage(lmap, projectRasterForLeaflet(full),colors=palette2)
-    lmap <- addLegend(lmap, "topright", values = vals,color=pal,labels=c("Low","","","","","","","","","","High"),title = "Habitat suitability")
+    lmap <- addLegend(lmap, "topright", values = vals,color=legend_pal,labels=c("High","","","","","","","","","","Low"),title = "Habitat suitability")
     lmap <- addLegend(lmap,"topright",colors = "grey",labels="Removed",opacity = 1)
     lmap <-addPolygons(lmap,data=removed,color="grey",opacity = 1,fillOpacity = 1)
     if(ashow2012()){
-      lmap <-addPolylines(lmap,data=NTA_2012,color="black",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2012,color="aquamarine",weight = 2)
     }
     if(ashow2015()){
-      lmap <-addPolylines(lmap,data=NTA_2015,color="blue",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2015,color="forestgreen",weight = 2)
     }
     lmap
   })
@@ -582,16 +645,16 @@ server <- shinyServer(function(input, output) {
     crs(full)="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
     lmap=leaflet()
     lmap <- setView(lmap, target_ext$lon, target_ext$lat, zoom=target_ext$zoom)
-    lmap <- addProviderTiles(lmap, "Esri.NatGeoWorldMap",options = providerTileOptions(noWrap = F))
+    lmap <- addProviderTiles(lmap, "Stamen.Toner",options = providerTileOptions(noWrap = F))
     lmap <-addRasterImage(lmap, projectRasterForLeaflet(full),colors=palette2)
     #lmap <- addLegend(lmap, "topright", values = vals,pal=palette2,title = "Habitat suitability")
     #lmap <- addLegend(lmap,"topright",colors = "grey",labels = "Removed areas",opacity = 1)
     lmap <-addPolygons(lmap,data=removed,color="grey",opacity = 1,fillOpacity = 1)
     if(ashow2012()){
-      lmap <-addPolylines(lmap,data=NTA_2012,color="black",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2012,color="aquamarine",weight = 2)
     }
     if(ashow2015()){
-      lmap <-addPolylines(lmap,data=NTA_2015,color="blue",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2015,color="forestgreen",weight = 2)
     }
     lmap
   })
@@ -612,16 +675,16 @@ server <- shinyServer(function(input, output) {
     crs(full)="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
     lmap=leaflet()
     lmap <- setView(lmap, target_ext$lon, target_ext$lat, zoom=target_ext$zoom)
-    lmap <- addProviderTiles(lmap, "Esri.NatGeoWorldMap",options = providerTileOptions(noWrap = F))
+    lmap <- addProviderTiles(lmap, "Stamen.Toner",options = providerTileOptions(noWrap = F))
     lmap <-addRasterImage(lmap, projectRasterForLeaflet(full),colors=palette2)
     #lmap <- addLegend(lmap, "topright", values = vals,pal=palette2,title = "Habitat suitability")
     #lmap <- addLegend(lmap,"topright",colors = "grey",labels = "Removed areas",opacity = 1)
     lmap <-addPolygons(lmap,data=removed,color="grey",opacity = 1,fillOpacity = 1)
     if(ashow2012()){
-      lmap <-addPolylines(lmap,data=NTA_2012,color="black",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2012,color="aquamarine",weight = 2)
     }
     if(ashow2015()){
-      lmap <-addPolylines(lmap,data=NTA_2015,color="blue",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2015,color="forestgreen",weight = 2)
     }
     lmap
   })
@@ -642,16 +705,16 @@ server <- shinyServer(function(input, output) {
     crs(full)="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
     lmap=leaflet()
     lmap <- setView(lmap, target_ext$lon, target_ext$lat, zoom=target_ext$zoom)
-    lmap <- addProviderTiles(lmap, "Esri.NatGeoWorldMap",options = providerTileOptions(noWrap = F))
+    lmap <- addProviderTiles(lmap, "Stamen.Toner",options = providerTileOptions(noWrap = F))
     lmap <-addRasterImage(lmap, projectRasterForLeaflet(full),colors=palette2)
     #lmap <- addLegend(lmap, "topright", values = vals,pal=palette2,title = "Habitat suitability")
     #lmap <- addLegend(lmap,"topright",colors = "grey",labels = "Removed areas",opacity = 1)
     lmap <-addPolygons(lmap,data=removed,color="grey",opacity = 1,fillOpacity = 1)
     if(ashow2012()){
-      lmap <-addPolylines(lmap,data=NTA_2012,color="black",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2012,color="aquamarine",weight = 2)
     }
     if(ashow2015()){
-      lmap <-addPolylines(lmap,data=NTA_2015,color="blue",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2015,color="forestgreen",weight = 2)
     }
     lmap
   })
@@ -672,16 +735,16 @@ server <- shinyServer(function(input, output) {
     crs(full)="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
     lmap=leaflet()
     lmap <- setView(lmap, target_ext$lon, target_ext$lat, zoom=target_ext$zoom)
-    lmap <- addProviderTiles(lmap, "Esri.NatGeoWorldMap",options = providerTileOptions(noWrap = F))
+    lmap <- addProviderTiles(lmap, "Stamen.Toner",options = providerTileOptions(noWrap = F))
     lmap <-addRasterImage(lmap, projectRasterForLeaflet(full),colors=palette2)
     #lmap <- addLegend(lmap, "topright", values = vals,pal=palette2,title = "Habitat suitability")
     #lmap <- addLegend(lmap,"topright",colors = "grey",labels = "Removed areas",opacity = 1)
     lmap <-addPolygons(lmap,data=removed,color="grey",opacity = 1,fillOpacity = 1)
     if(ashow2012()){
-      lmap <-addPolylines(lmap,data=NTA_2012,color="black",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2012,color="aquamarine",weight = 2)
     }
     if(ashow2015()){
-      lmap <-addPolylines(lmap,data=NTA_2015,color="blue",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2015,color="forestgreen",weight = 2)
     }
     lmap
   })
@@ -702,16 +765,16 @@ server <- shinyServer(function(input, output) {
     crs(full)="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
     lmap=leaflet()
     lmap <- setView(lmap, target_ext$lon, target_ext$lat, zoom=target_ext$zoom)
-    lmap <- addProviderTiles(lmap, "Esri.NatGeoWorldMap",options = providerTileOptions(noWrap = F))
+    lmap <- addProviderTiles(lmap, "Stamen.Toner",options = providerTileOptions(noWrap = F))
     lmap <-addRasterImage(lmap, projectRasterForLeaflet(full),colors=palette2)
     #lmap <- addLegend(lmap, "topright", values = vals,pal=palette2,title = "Habitat suitability")
     #lmap <- addLegend(lmap,"topright",colors = "grey",labels = "Removed areas",opacity = 1)
     lmap <-addPolygons(lmap,data=removed,color="grey",opacity = 1,fillOpacity = 1)
     if(ashow2012()){
-      lmap <-addPolylines(lmap,data=NTA_2012,color="black",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2012,color="aquamarine",weight = 2)
     }
     if(ashow2015()){
-      lmap <-addPolylines(lmap,data=NTA_2015,color="blue",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2015,color="forestgreen",weight = 2)
     }
     lmap
   })
@@ -732,16 +795,16 @@ server <- shinyServer(function(input, output) {
     crs(full)="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
     lmap=leaflet()
     lmap <- setView(lmap, target_ext$lon, target_ext$lat, zoom=target_ext$zoom)
-    lmap <- addProviderTiles(lmap, "Esri.NatGeoWorldMap",options = providerTileOptions(noWrap = F))
+    lmap <- addProviderTiles(lmap, "Stamen.Toner",options = providerTileOptions(noWrap = F))
     lmap <-addRasterImage(lmap, projectRasterForLeaflet(full),colors=palette2)
     #lmap <- addLegend(lmap, "topright", values = vals,pal=palette2,title = "Habitat suitability")
     #lmap <- addLegend(lmap,"topright",colors = "grey",labels = "Removed areas",opacity = 1)
     lmap <-addPolygons(lmap,data=removed,color="grey",opacity = 1,fillOpacity = 1)
     if(ashow2012()){
-      lmap <-addPolylines(lmap,data=NTA_2012,color="black",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2012,color="aquamarine",weight = 2)
     }
     if(ashow2015()){
-      lmap <-addPolylines(lmap,data=NTA_2015,color="blue",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2015,color="forestgreen",weight = 2)
     }
     lmap
   })
@@ -760,26 +823,34 @@ server <- shinyServer(function(input, output) {
     
     full=list.files(full_models_dir,pattern = numDate(),full.names = T)%>%stack()%>%calc(.,fun=sum)
     
-    pal <- brewer.pal(11,"RdYlBu")
+    pal <- colorRampPalette(rev(c("#A50026", "#FFFFBF", "#313695")))
+    ncolors <- 100
+    col=pal(ncolors)
     vals <- NULL
-    vals=c(0,full@data@max)
-    palette2 <- colorNumeric(pal, vals,
-                             na.color = "transparent")
+    vals=c(full@data@min,full@data@max)
+    palette2 <- colorNumeric(col, vals,na.color = "transparent")
+    legend_pal=c("#A50026","#B52E41","#C76160","#D9957F","#EBC89E", "#FFFFBF","#D7D8B6","#ADAFAE","#8487A5","#5A5E9D","#313695")
+    
+    # # pal <- brewer.pal(11,"RdYlBu")
+    # #vals <- NULL
+    #  vals=c(0,full@data@max)
+    #  palette2 <- colorNumeric(pal, vals,
+    #                           na.color = "transparent")
     
     #full=raster(paste0(full_models_dir,"all_",numDate(),".asc"))
     crs(full)="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
     lmap=leaflet()
     lmap <- setView(lmap, target_ext$lon, target_ext$lat, zoom=target_ext$zoom)
-    lmap <- addProviderTiles(lmap, "Esri.NatGeoWorldMap",options = providerTileOptions(noWrap = F))
+    lmap <- addProviderTiles(lmap, "Stamen.Toner",options = providerTileOptions(noWrap = F))
     lmap <-addRasterImage(lmap, projectRasterForLeaflet(full),colors=palette2)
     #lmap <- addLegend(lmap, "topright", values = vals,pal=palette2,title = "Habitat suitability")
     #lmap <- addLegend(lmap,"topright",colors = "grey",labels = "Removed areas",opacity = 1)
     lmap <-addPolygons(lmap,data=removed,color="grey",opacity = 1,fillOpacity = 1)
     if(ashow2012()){
-      lmap <-addPolylines(lmap,data=NTA_2012,color="black",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2012,color="aquamarine",weight = 2)
     }
     if(ashow2015()){
-      lmap <-addPolylines(lmap,data=NTA_2015,color="blue",weight = 2)
+      lmap <-addPolylines(lmap,data=NTA_2015,color="forestgreen",weight = 2)
     }
     lmap
   })
